@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+.pytest_cache/
+.DS_Store
+
+# 비밀값·개인정보가 담길 수 있는 파일은 올리지 않습니다
+.env
+.env.*
+*.pem
+*.key
+.claude/settings.local.json
+data/

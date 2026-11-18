@@ -1,0 +1,18 @@
+[project]
+name = "ko-rag-kit"
+version = "0.1.0"
+description = "한국어 문서용 RAG 도구 모음: 하이브리드 검색, 형태소 토크나이저, 마크다운 청크, 개인정보 마스킹, 비용 계산"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+korean = ["kiwipiepy"]
+embed = ["sentence-transformers"]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
