@@ -16,6 +16,9 @@ def test_kiwi_morphemes():
     assert tokenize.name() == "kiwi"
     tokens = tokenize.tokenize("예약을 변경하고 싶어요")
     assert "예약" in tokens and "변경" in tokens and "을" not in tokens
+    # 형용사(VA), 의존명사(NNB)도 남기고, 영어는 분석 뒤에 소문자로 바꿉니다
+    tokens = tokenize.tokenize("API 요금이 비싸요 3번")
+    assert {"api", "비싸", "3", "번"} <= set(tokens)
 
 
 def test_bm25_scores_only_matching_docs():
@@ -48,13 +51,15 @@ def test_long_section_split():
 def test_mask_keeps_dates():
     masked, found = mask.mask(
         "주민 900101-1234567, 카드 4111 1111 1111 1111, 010-1234-5678로 연락, "
-        "사무실 (02) 123-4567, test@example.com으로 메일, 계좌 110-123-456789, 날짜 2026-11-03"
+        "사무실 (02) 123-4567, 인터넷전화 070-1234-5678, test@example.com으로 메일, "
+        "계좌 110-123-456789, 날짜 2026-11-03"
     )
     assert masked == (
         "주민 [주민번호], 카드 [카드번호], [전화번호]로 연락, "
-        "사무실 [전화번호], [이메일]으로 메일, 계좌 [계좌번호], 날짜 2026-11-03"
+        "사무실 [전화번호], 인터넷전화 [전화번호], [이메일]으로 메일, "
+        "계좌 [계좌번호], 날짜 2026-11-03"
     )
-    assert sorted(found) == sorted(["주민번호", "카드번호", "전화번호", "전화번호", "이메일", "계좌번호"])
+    assert sorted(found) == sorted(["주민번호", "카드번호", "전화번호", "전화번호", "전화번호", "이메일", "계좌번호"])
 
 
 def test_cost():

@@ -3,8 +3,8 @@
 import re
 from functools import cache
 
-# 일반·고유명사, 동사, 어근, 외국어, 숫자
-_KIWI_TAGS = {"NNG", "NNP", "VV", "XR", "SL", "SN"}
+# 일반·고유·의존명사, 수사, 동사, 형용사, 어근, 외국어, 숫자, 한자
+_KIWI_TAGS = {"NNG", "NNP", "NNB", "NR", "VV", "VA", "XR", "SL", "SN", "SH"}
 _WORD = re.compile(r"[가-힣]+|[a-z0-9]+")
 
 
@@ -23,12 +23,12 @@ def name() -> str:
 
 
 def tokenize(text: str) -> list[str]:
-    text = text.lower()
     if kiwi := _kiwi():
-        # 동사는 VV-R/VV-I처럼 활용 표시가 붙어 나올 수 있어 앞부분만 봅니다
-        return [t.form for t in kiwi.tokenize(text) if t.tag.split("-")[0] in _KIWI_TAGS]
+        # 동사·형용사는 VV-R처럼 활용 표시가 붙어 나올 수 있어 앞부분만 봅니다.
+        # 소문자 변환은 분석 뒤에 합니다. 대소문자가 Kiwi 분석 결과에 영향을 줄 수 있습니다.
+        return [t.form.lower() for t in kiwi.tokenize(text) if t.tag.split("-")[0] in _KIWI_TAGS]
     tokens = []
-    for word in _WORD.findall(text):
+    for word in _WORD.findall(text.lower()):
         tokens.append(word)
         if len(word) > 2 and "가" <= word[0] <= "힣":
             tokens += [word[i : i + 2] for i in range(len(word) - 1)]

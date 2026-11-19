@@ -27,7 +27,7 @@ def embed(
 ) -> np.ndarray:
     """(len(texts), 차원) float32 배열. 모델을 바꾸면 기존 청크도 모두 다시 임베딩해야 합니다."""
     if provider == "voyage":
-        return _voyage(texts, kind, model or "voyage-3.5")
+        return _voyage(texts, kind, model or "voyage-4")
     # bge-m3는 질의와 문서에 별도 접두어가 필요 없어 kind를 쓰지 않습니다
     vectors = _local_model(model or "BAAI/bge-m3").encode(texts, normalize_embeddings=True)
     return np.asarray(vectors, dtype=np.float32)
