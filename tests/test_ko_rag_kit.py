@@ -42,6 +42,20 @@ def test_split_markdown_sections():
     assert chunks[2].content == "안내 > 예약 > 변경\n\n변경 방법"
 
 
+def test_split_markdown_meta_frontmatter_comments():
+    md = (
+        "---\ntitle: 비공개\ntenant: a\n---\n"
+        "## 섹션\n본문 <!-- 내부 메모 -->끝\n<!--\n여러 줄\n메모\n-->\n"
+        "```html\n<!-- 코드 속 주석 -->\n```\n"
+    )
+    chunks = chunk.split_markdown(md, title="문서", meta={"tenant": "a"})
+    assert len(chunks) == 1 and chunks[0].meta == {"tenant": "a"}
+    content = chunks[0].content
+    assert "비공개" not in content and "메모" not in content
+    assert "본문 끝" in content and "<!-- 코드 속 주석 -->" in content
+    assert chunk.split_markdown("본문")[0].meta == {}
+
+
 def test_long_section_split():
     body = "\n\n".join(["가" * 1000] * 3)
     assert len(chunk.split_markdown(f"## 긴 섹션\n{body}", title="문서")) == 3
